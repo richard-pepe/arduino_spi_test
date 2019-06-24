@@ -20,9 +20,9 @@ union register_t {
 volatile register_t register_data[2];
 
 void setup () {
-	SPI.begin ();
-	SPI.setClockDivider(SPI_CLOCK_DIV8);
 	digitalWrite(SS, HIGH);
+	SPI.begin();
+	//SPI.setClockDivider(SPI_CLOCK_DIV8);
 
 	Serial.begin (9600);   // Debugging
 	Serial.println("Initializing...");
@@ -57,40 +57,44 @@ void loop () {
 void poke (int idx) {
 
 	// Slave Select Enable
+	SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS, LOW);    		// SS is pin 10
 
 	// Transmit
 	for (uint8_t i=0; i<sizeof(reg_t); i++) {
-		delayMicroseconds(15);
-		SPI.transfer(SPI_POKE);    	// Transaction Type
-		delayMicroseconds(15);
-		SPI.transfer(i);			// Register
-		delayMicroseconds(15);
+	    delayMicroseconds(15);
+	    SPI.transfer(SPI_POKE);		// Transaction Type
+	    delayMicroseconds(15);
+	    SPI.transfer(i);			// Register
+	    delayMicroseconds(15);
 		SPI.transfer(register_data[idx].raw[i]);
 	}
 
 	// Slave Select Disable
-	digitalWrite(SS, HIGH);	
+	digitalWrite(SS, HIGH);
+	SPI.endTransaction();
 
 }
 
 void peak (int idx) {
 
 	// Slave Select Enable
+	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS, LOW);
 
 	// Transmit
 	for (uint8_t i=0; i<sizeof(reg_t); i++) {
-		delayMicroseconds(15);
-		SPI.transfer(SPI_PEAK);		// Transaction Type
-		delayMicroseconds(15);
-		SPI.transfer(i);            // Register
-		delayMicroseconds(15);
+	    delayMicroseconds(15);
+	    SPI.transfer(SPI_PEAK);		// Transaction Type
+	    delayMicroseconds(15);
+	    SPI.transfer(i);			// Register
+	    delayMicroseconds(15);
 		register_data[idx].raw[i] = SPI.transfer(0);
 	}
 
 	// Slave Select Disable
 	digitalWrite(SS, HIGH);
+	SPI.endTransaction();
 
 	// Debug Received Bytes in Engineering Units
 	Serial.print("Value 1: "); Serial.println(register_data[idx].eng.value1);

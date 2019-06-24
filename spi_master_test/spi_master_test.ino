@@ -57,7 +57,7 @@ void loop () {
 void poke (int idx) {
 
 	// Slave Select Enable
-	SPI.beginTransaction(SPISettings(2000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS, LOW);    		// SS is pin 10
 
 	// Transmit
@@ -79,7 +79,7 @@ void poke (int idx) {
 void peak (int idx) {
 
 	// Slave Select Enable
-	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(SS, LOW);
 
 	// Transmit

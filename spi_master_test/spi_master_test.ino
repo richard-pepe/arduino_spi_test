@@ -16,11 +16,13 @@ union register_t {
 
 #define SPI_PEAK	0
 #define SPI_POKE	1
+#define CS_IO_MODULE 10
 
 volatile register_t register_data[2];
 
 void setup () {
-	digitalWrite(SS, HIGH);
+  	pinMode(CS_IO_MODULE, OUTPUT);
+	digitalWrite(CS_IO_MODULE, HIGH);
 	SPI.begin();
 	//SPI.setClockDivider(SPI_CLOCK_DIV8);
 
@@ -58,7 +60,7 @@ void poke (int idx) {
 
 	// Slave Select Enable
 	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-	digitalWrite(SS, LOW);    		// SS is pin 10
+	digitalWrite(CS_IO_MODULE, LOW);    		// SS is pin 10
 
 	// Transmit
 	for (uint8_t i=0; i<sizeof(reg_t); i++) {
@@ -71,7 +73,7 @@ void poke (int idx) {
 	}
 
 	// Slave Select Disable
-	digitalWrite(SS, HIGH);
+	digitalWrite(CS_IO_MODULE, HIGH);
 	SPI.endTransaction();
 
 }
@@ -80,7 +82,7 @@ void peak (int idx) {
 
 	// Slave Select Enable
 	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
-	digitalWrite(SS, LOW);
+	digitalWrite(CS_IO_MODULE, LOW);
 
 	// Transmit
 	for (uint8_t i=0; i<sizeof(reg_t); i++) {
@@ -93,7 +95,7 @@ void peak (int idx) {
 	}
 
 	// Slave Select Disable
-	digitalWrite(SS, HIGH);
+	digitalWrite(CS_IO_MODULE, HIGH);
 	SPI.endTransaction();
 
 	// Debug Received Bytes in Engineering Units
